@@ -1,0 +1,29 @@
+module pc(
+
+
+);
+
+s1 pc(
+	
+	.clk(),
+	.rst(),
+	
+	.ena_for_i(ena_for_i),
+
+
+);
+
+s2 if_id(
+
+
+);
+
+
+s3 pc_reg(
+
+
+);
+
+
+
+endmodule

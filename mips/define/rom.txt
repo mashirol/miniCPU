@@ -1,0 +1,23 @@
+module	rom（ce , addr , inst）;
+
+	input            	  ce;
+	input  [`inst_addr_bus]   addr;
+	output [`inst_data_bus]   inst;
+
+
+reg inst;
+reg[`inst_data_bus] rom[0:`inst_mem_num-1];
+
+
+	initial $readmemh("inst_rom.data", rom)
+	
+	always@(*)begin
+		if( ce == 1'b0 ) begin
+			inst <= `word_zero;
+		end
+		else begin
+			inst <= rom[addr[{2'b0,`inst_mem_real_width-1}:2]];
+		end
+	end
+
+endmodule

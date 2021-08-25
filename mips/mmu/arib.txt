@@ -1,0 +1,71 @@
+
+assign reg = {ena_i,ena_d};
+
+always@(posedge clk)
+	if(rst)
+
+	else
+	
+		current 	<= next
+
+
+always@(*)
+
+	case(current)
+		s0:
+			valid_i <= 0;
+			valid_d <= 0;
+			if(reg == 0 || busy)
+				next<= s0;
+			else if(reg == 2'b01)
+				next<= s1;
+			else if(reg == 2'b10)
+				next<= s2;
+			else 
+				next<= s3;
+
+
+
+		s1:
+				valid_d <= 0;
+				addr    <= addr_i;
+				ena     <= ena_i;
+				w_r     <= w_r_i;
+				data    <= data_i;
+			if(valid == 0)
+				next<=s1;
+
+			else 
+				next    <= s0;
+				out_i   <= data;
+				valid_i <= 1
+			
+
+		s2:
+			valid_i <= 0;
+			addr    <= addr_d;
+			ena     <= ena_d;
+			w_r     <= w_r_d;
+			data    <= data_d;
+			sel     <= sel;
+			if(valid == 0)
+				next<=s2;
+			else 
+				out_d   <= data;
+				valid_d <= 1;
+				next    <= s0;
+				
+		s3:
+
+			addr <= addr_d;
+			ena  <= ena_d;
+			w_r <= w_r_d;
+			data<= data_d;
+			sel <= sel;
+			if(valid == 0)
+				next    <= s3;
+			else 
+				out_d   <= data;
+				valid_d <= 1;
+				next    <= s1;
+				

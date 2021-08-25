@@ -1,0 +1,7 @@
+module pc()
+
+input clk;
+input rst;
+
+output pc;
+output ce;

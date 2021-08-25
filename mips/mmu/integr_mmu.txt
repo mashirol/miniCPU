@@ -1,0 +1,363 @@
+module part_mmu(
+
+input	clk,
+input	rst,
+
+input[31:0]	addr_i_i,
+input[31:0]	addr_d_i,
+input[31:0]	w_data_i,
+input	w_r_i,
+input	ena_i_i,
+input	ena_d_i,
+input[31:0]	start_entry_cata,
+input[31:0]	configg,
+input[3:0]	sel_byte_i,
+
+
+input[127:0]	idata_i1,
+input[127:0]	idata_i2,
+input[26:0]	iaddr_i1,
+input[26:0]	iaddr_i2,
+
+
+input[127:0]	ddata_i1,
+input[127:0]	ddata_i2,
+input[26:0]	daddr_i1,
+input[26:0]	daddr_i2,
+
+
+input[31:0]	ipaddr_r_i,
+input	ivalid_r_i,
+
+
+input[31:0]	dpaddr_r_i,
+input	dvalid_r_i,
+
+output[31:0]	data_i_o,
+output[31:0]	data_d_o,
+output	except_i_o,
+output	except_d_o,
+output	valid_i_o,
+output	valid_d_o,
+
+output	ivalid_r_o,
+output[5:0]	ir_addr_o,
+output[6:0]	iw_addr_o,
+output[26:0]	idata_addr_o,
+output[127:0]	idata_d_o,
+output	ivalid_w_o,
+output	ichg_o,
+
+
+output	dvalid_r_o,
+output[5:0]	dr_addr_o,
+output[6:0]	dw_addr_o,
+output[26:0]	ddata_addr_o,
+output[127:0]	ddata_d_o,
+output	dvalid_w_o,
+output	dchg_o,
+	
+output	iena_r_o,
+output[19:0]	ivaddr_o,
+output	iena_w_o,
+output[3:0]	iaddr_o,
+output[19:0]	ipaddr_w_o,
+
+output	dena_r_o,
+output[19:0]	dvaddr_o,
+output	dena_w_o,
+output[3:0]	daddr_o,
+output[19:0]	dpaddr_w_o
+
+
+
+);
+
+
+wire m2,m2m,m3,m3m,i2,i3,d2,d3,a2,a3,a6,b2,b3,b6,m6,m6m,m7,m7m,i5,i7,i8,d5,d7,d8,a9,a10,a12,a13,b9,b10,b12,b13;
+wire[31:0] m1,m1m,i1,d1,a1,a5,b1,b5,m4,m4m,m5,m5m,i4,i6,d4,d6,a7,a8,b7,b8;
+wire[127:0] a4,b4,a11,b11;
+wire[3:0] m8,m8m,b14;
+
+
+
+mmu mu(
+	.clk(clk),
+	.rst(rst),
+	.addr_i_i(addr_i_i),
+	.addr_d_i(addr_d_i),
+	.w_data_i(w_data_i),
+	.w_r_i(w_r_i),
+	.ena_i_i(ena_i_i),
+	.ena_d_i(ena_d_i),
+	.start_entry_cata(start_entry_cata),
+	.config_i(configg),
+	.sel_byte_i(sel_byte_i),
+	.data_mem_i(m1),
+	.valid_mem_i(m2),
+	.busy_mem_i(m3),
+	.data_memd_i(m1m),
+	.valid_memd_i(m2m),
+	.busy_memd_i(m3m),
+
+	.addr_itlb_i(i1),
+	.valid_itlb_i(i2),
+	.suc_itlb_i(i3),
+	
+	.addr_dtlb_i(d1),
+	.valid_dtlb_i(d2),
+	.suc_dtlb_i(d3),
+	
+	.data_iche_i(a1),
+	.valid_iche_i(a2),		
+	.suc_iche_i(a3),
+	.data_chg_iche_i(a4),
+	.addr_chg_iche_i(a5),
+	.inqur_iche_i(a6),
+
+	.data_dche_i(b1),
+	.valid_dche_i(b2),		
+	.suc_dche_i(b3),
+	.data_chg_dche_i(b4),
+	.addr_chg_dche_i(b5),
+	.inqur_dche_i(b6),
+
+
+	.data_i_o(data_i_o),
+	.data_d_o(data_d_o),
+	.except_i_o(except_i_o),
+	.except_d_o(except_d_o),
+	.valid_i_o(valid_i_o),
+	.valid_d_o(valid_d_o),
+
+	.addr_mem_o(m4),
+	.data_mem_o(m5),
+	.valid_mem_o(m6),
+	.w_r_mem_o(m7),
+	.sel_byte_mem_o(m8),
+	.addr_memd_o(m4m),
+	.data_memd_o(m5m),
+	.valid_memd_o(m6m),
+	.w_r_memd_o(m7m),
+	.sel_byte_memd_o(m8m),
+
+	.addr_itlb_o(i4),
+	.ena_itlb_o(i5),
+	.addr_chg_itlb_o(i6),
+	.valid_chg_itlb_o(i7),
+	.suc_chg_itlb_o(i8),
+
+	.addr_dtlb_o(d4),
+	.ena_dtlb_o(d5),
+	.addr_chg_dtlb_o(d6),
+	.valid_chg_dtlb_o(d7),
+	.suc_chg_dtlb_o(d8),
+
+	.addr_iche_o(a7),
+	.data_iche_o(a8),
+	.w_r_iche_o(a9),
+	.ena_iche_o(a10),
+	.data_chg_iche_o(a11),
+	.valid_chg_iche_o(a12),
+	.valid_inq_iche_o(a13),
+
+	.addr_dche_o(b7),
+	.data_dche_o(b8),
+	.w_r_dche_o(b9),
+	.ena_dche_o(b10),
+	.data_chg_dche_o(b11),
+	.valid_chg_dche_o(b12),
+	.valid_inq_dche_o(b13),
+	.sel_byte_dche_o(b14)
+
+);
+
+
+
+
+
+meme mm(
+
+	.clk(clk),
+	.rst(rst),
+
+	.addr_i(m4),
+	.data_i(m5),
+	.sel_byte_i(m8),
+	.ena_i(m6),
+	.w_r_i(m7),
+
+	.data_o(m1),
+	.valid_o(m2),
+	.busy(m3)
+	
+
+);
+
+meme mm1(
+
+	.clk(clk),
+	.rst(rst),
+
+	.addr_i(m4m),
+	.data_i(m5m),
+	.sel_byte_i(m8m),
+	.ena_i(m6m),
+	.w_r_i(m7m),
+
+	.data_o(m1m),
+	.valid_o(m2m),
+	.busy(m3m)
+	
+
+);
+
+
+
+
+
+icache ic(
+
+	.clk(clk),
+	.rst(rst),
+
+	.addr_i(a7),
+	.data_i(a8),
+	.w_r_i(a9),
+	.ena_i(a10),
+	.data_chg_i(a11),
+	.valid_chg_i(a12),
+	.valid_inq_i(a13),
+
+	.data_i1(idata_i1),
+	.data_i2(idata_i2),
+	.addr_i1(iaddr_i1),
+	.addr_i2(iaddr_i2),
+	
+	.valid_r_o(ivalid_r_o),
+	.r_addr_o(ir_addr_o),
+	.w_addr_o(iw_addr_o),
+	.data_addr_o(idata_addr_o),
+	.data_d_o(idata_d_o),
+	.valid_w_o(ivalid_w_o),
+	.chg_o(ichg_o),
+	
+	.data_o(a1),
+	.valid_o(a2),
+	.suc_o(a3),
+	.data_chg_o(a4),
+	.addr_chg_o(a5),
+	.inq_o(a6)
+
+);
+
+
+
+
+
+
+
+dcache dc(
+
+
+	.clk(clk),
+	.rst(rst),
+
+	.addr_i(b7),
+	.data_i(b8),
+	.w_r_i(b9),
+	.ena_i(b10),
+	.data_chg_i(b11),
+	.valid_chg_i(b12),
+	.valid_inq_i(b13),
+	.sel_byte(b14),
+
+	.data_i1(ddata_i1),
+	.data_i2(ddata_i2),
+	.addr_i1(daddr_i1),
+	.addr_i2(daddr_i2),
+	
+	.valid_r_o(dvalid_r_o),
+	.r_addr_o(dr_addr_o),
+	.w_addr_o(dw_addr_o),
+	.data_addr_o(ddata_addr_o),
+	.data_d_o(ddata_d_o),
+	.valid_w_o(dvalid_w_o),
+	.chg_o(dchg_o),
+	
+	.data_o(b1),
+	.valid_o(b2),
+	.suc_o(b3),
+	.data_chg_o(b4),
+	.addr_chg_o(b5),
+	.inq_o(b6)
+
+);
+
+
+
+
+
+
+itlb it(
+
+	.clk(clk),
+	.rst(rst),
+	
+	.vaddr_i(i4),
+	.ena_i(i5),
+	.paddr_i(i6),
+	.valid_i(i7),
+	.suc_chg(i8),
+
+	.paddr_r_i(ipaddr_r_i),
+	.valid_r_i(ivalid_r_i),
+
+	.ena_r_o(iena_r_o),
+	.vaddr_o(ivaddr_o),
+	.ena_w_o(iena_w_o),
+	.addr_o(iaddr_o),
+	.paddr_w_o(ipaddr_w_o),
+	
+	.paddr_o(i1),
+	.valid_o(i2),
+	.suc_o(i3)
+
+);
+
+
+
+
+
+dtlb dt(
+
+	.clk(clk),
+	.rst(rst),
+
+	.vaddr_i(d4),
+	.ena_i(d5),
+	.paddr_i(d6),
+	.valid_i(d7),
+	.suc_chg(d8),
+
+	.paddr_r_i(dpaddr_r_i),
+	.valid_r_i(dvalid_r_i),
+
+	.ena_r_o(dena_r_o),
+	.vaddr_o(dvaddr_o),
+	.ena_w_o(dena_w_o),
+	.addr_o(daddr_o),
+	.paddr_w_o(dpaddr_w_o),
+
+	.paddr_o(d1),
+	.valid_o(d2),
+	.suc_o(d3)
+
+);
+
+
+
+
+endmodule
+
+

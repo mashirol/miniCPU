@@ -1,0 +1,201 @@
+module use_mmu(
+
+input	clk,
+input	rst,
+
+input[31:0]	addr_i_i,
+input[31:0]	addr_d_i,
+input[31:0]	w_data_i,
+input	w_r_i,
+input	ena_i_i,
+input	ena_d_i,
+input[31:0]	start_entry_cata,
+input[31:0]	configg,
+input[3:0]	sel_byte_i,
+
+
+output[31:0]	data_i_o,
+output[31:0]	data_d_o,
+output	except_i_o,
+output	except_d_o,
+output	valid_i_o,
+output	valid_d_o
+
+);
+
+wire[127:0] a1,a2,b1,b2,a11,b11;
+wire[26:0]  a3,a4,b3,b4,a10,b10;
+wire[31:0]  a5,b5;
+wire a6,b6,a7,b7,a12,b12,a13,b13,c1,d1,c3,d3;
+wire[5:0] a8,b8;
+wire[6:0] a9,b9;
+wire[19:0] c2,d2,c5,d5;
+wire[3:0] c4,d4;
+
+
+part_mmu s1(
+	.clk(clk),
+	.rst(rst),
+
+	.addr_i_i(addr_i_i),
+	.addr_d_i(addr_d_i),
+	.w_data_i(w_data_i),
+	.w_r_i(w_r_i),
+	.ena_i_i(ena_i_i),
+	.ena_d_i(ena_d_i),
+	.start_entry_cata(start_entry_cata),
+	.configg(configg),
+	.sel_byte_i(sel_byte_i),
+
+
+	.idata_i1(a1),
+	.idata_i2(a2),
+	.iaddr_i1(a3),
+	.iaddr_i2(a4),
+
+
+	.ddata_i1(b1),
+	.ddata_i2(b2),
+	.daddr_i1(b3),
+	.daddr_i2(b4),
+
+
+	.ipaddr_r_i(a5),
+	.ivalid_r_i(a6),
+
+
+	.dpaddr_r_i(b5),
+	.dvalid_r_i(b6),
+
+	.data_i_o(data_i_o),
+	.data_d_o(data_d_o),
+	.except_i_o(except_i_o),
+	.except_d_o(except_d_o),
+	.valid_i_o(valid_i_o),
+	.valid_d_o(valid_d_o),
+
+	.ivalid_r_o(a7),
+	.ir_addr_o(a8),
+	.iw_addr_o(a9),
+	.idata_addr_o(a10),
+	.idata_d_o(a11),
+	.ivalid_w_o(a12),
+	.ichg_o(a13),
+
+
+	.dvalid_r_o(b7),
+	.dr_addr_o(b8),
+	.dw_addr_o(b9),
+	.ddata_addr_o(b10),
+	.ddata_d_o(b11),
+	.dvalid_w_o(b12),
+	.dchg_o(b13),
+	
+	.iena_r_o(c1),
+	.ivaddr_o(c2),
+	.iena_w_o(c3),
+	.iaddr_o(c4),
+	.ipaddr_w_o(c5),
+
+	.dena_r_o(d1),
+	.dvaddr_o(d2),
+	.dena_w_o(d3),
+	.daddr_o(d4),
+	.dpaddr_w_o(d5)
+
+
+
+);
+
+
+
+
+cache s2(
+	.clk(clk),
+	.rst(rst),
+
+
+	.valid_r_o(a7),
+	.r_addr_o(a8),
+	.w_addr_o(a9),
+	.data_addr_o(a10),
+	.data_d_o(a11),
+	.valid_w_o(a12),
+	.chg_o(a13),
+
+	.data_i1(a1),
+	.data_i2(a2),
+	.addr_i1(a3),
+	.addr_i2(a4)
+
+);
+
+
+
+cache s3(
+	.clk(clk),
+	.rst(rst),
+
+
+	.valid_r_o(b7),
+	.r_addr_o(b8),
+	.w_addr_o(b9),
+	.data_addr_o(b10),
+	.data_d_o(b11),
+	.valid_w_o(b12),
+	.chg_o(b13),
+
+	.data_i1(b1),
+	.data_i2(b2),
+	.addr_i1(b3),
+	.addr_i2(b4)
+
+);
+
+
+tlb s4(
+
+
+	.clk(clk),
+	.rst(rst),
+
+
+	.ena_r_o(d1),
+	.vaddr_o(d2),
+
+	.ena_w_o(d3),
+	.addr_o(d4),
+	.paddr_w_o(d5),
+
+
+	.paddr_r_i(b5),
+	.valid_r_i(b6),
+
+
+);
+
+
+tlb s5(
+
+	.clk(clk),
+	.rst(rst),
+
+
+	.ena_r_o(c1),
+	.vaddr_o(c2),
+
+	.ena_w_o(c3),
+	.addr_o(c4),
+	.paddr_w_o(c5),
+
+
+	.paddr_r_i(a5),
+	.valid_r_i(a6)
+
+);
+
+
+
+
+
+endmodule
